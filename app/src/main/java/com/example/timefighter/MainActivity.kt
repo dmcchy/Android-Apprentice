@@ -4,6 +4,7 @@ package com.example.timefighter
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -14,6 +15,11 @@ import android.widget.Toast
 
 // MainActivity is a subclass of AppCompatActivity().
 class MainActivity : AppCompatActivity() {
+
+    // Adding this to be able to log.
+    internal val TAG = MainActivity::class.java.simpleName
+
+
 
     internal var gameStarted = false
 
@@ -28,6 +34,13 @@ class MainActivity : AppCompatActivity() {
 
     internal var score = 0
 
+
+    companion object {
+        private val SCORE_KEY = "SCORE_KEY"
+        private val TIME_LEFT_KEY = "TIME_LEFT_KEY"
+    }
+
+
     // I think this is a lifecycle entry.
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -35,7 +48,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
+
+
         setContentView(R.layout.activity_main)
+
+        // Run logger.
+
+        /**
+         * Run logger to determine bugs in orientation changes.
+         * 1. It attempts to save any properties for the activity specified by the developer.
+         * 2. It destroys the activity.
+         * 3. It recreates the activity for the new orientation by calling
+         *    onCreate and resets any properties specified by the developer.
+         */
+
+        Log.v(TAG, "onCreate called. Score is: $score")
 
         // Connect variables to views.
 
@@ -47,7 +74,32 @@ class MainActivity : AppCompatActivity() {
         // Listener
         tapMeButton.setOnClickListener { _ -> incrementScore() }
 
-        resetGame()
+        // Check if I have values in my bundle which I can use to restore my state values
+        // when the orientation changes.
+        if (savedInstanceState != null) {
+            score = savedInstanceState.getInt(SCORE_KEY)
+            timeLeft = savedInstanceState.getInt(TIME_LEFT_KEY)
+            restoreGame()
+        } else {
+            resetGame()
+        }
+    }
+
+    // Save items in a bundle.
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt(SCORE_KEY, score)
+        outState.putInt(TIME_LEFT_KEY, timeLeft)
+        countDownTimer.cancel()
+
+        Log.d(TAG, "onSaveInstanceState: Saving Score: $score & Time Left: $timeLeft")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Log.d(TAG, "onDestroy called")
     }
 
     private fun incrementScore() {
@@ -105,9 +157,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun endGame() {
         // "Toast" is the equivalent of alert.
-        Toast.makeText(this, getString(R.string.game_over_messsage,
-            Integer.toString(score)), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            getString(R.string.game_over_messsage, Integer.toString(score)),
+            Toast.LENGTH_LONG
+        ).show()
+
         resetGame()
+    }
+
+    private fun restoreGame() {
+        var restoredScore = getString(R.string.your_score, Integer.toString(score))
+        gameScoreTextView.text = restoredScore
+
+        var restoredTime = getString(R.string.time_left, Integer.toString(timeLeft))
+        timeLeftTextView.text = restoredTime
+
+        countDownTimer = object : CountDownTimer((timeLeft * 1000).toLong(),
+            countDownInterval) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                timeLeft = millisUntilFinished.toInt() / 1000
+
+                val timeLeftString = getString(R.string.time_left, Integer.toString(timeLeft))
+                timeLeftTextView.text = timeLeftString
+            }
+
+            override fun onFinish() {
+                endGame()
+            }
+        }
+
+        countDownTimer.start()
+        gameStarted = true
+
     }
 
 }
