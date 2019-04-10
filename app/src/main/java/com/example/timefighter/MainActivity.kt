@@ -42,7 +42,12 @@ class MainActivity : AppCompatActivity() {
     private fun incrementScore() {
         score++
 
-        val newScore = "Your Score: " + Integer.toString(score)
+        // val newScore = "Your Score: " + Integer.toString(score)
+
+        // We are now using our "strings.xml" to source our string.
+        // This is so we can easily support multiple languages by just using that file and pointing to
+        // global variables representing words in different languages.
+        val newScore = getString(R.string.your_score, Integer.toString(score))
         gameScoreTextView.text = newScore
     }
 
