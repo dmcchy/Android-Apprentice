@@ -190,7 +190,6 @@ class MainActivity : AppCompatActivity() {
 
         countDownTimer.start()
         gameStarted = true
-
     }
 
 }
