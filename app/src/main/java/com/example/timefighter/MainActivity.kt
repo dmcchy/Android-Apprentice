@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 
 /**
  * "Activity" - is the composition of every android app.
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 // To be implemented later
+                endGame()
             }
         }
 
@@ -102,7 +104,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun endGame() {
-
+        // "Toast" is the equivalent of alert.
+        Toast.makeText(this, getString(R.string.game_over_messsage,
+            Integer.toString(score)), Toast.LENGTH_LONG).show()
+        resetGame()
     }
 
 }
