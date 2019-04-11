@@ -3,8 +3,11 @@ package com.example.timefighter
 // Adding these 4 additional imports for support
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
@@ -108,6 +111,36 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         Log.d(TAG, "onDestroy called")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu) : Boolean {
+        // Inflate the menu (wat); this add items to the action bar if is present.
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu, menu)
+
+        // Ensure superclasses are executed, then use menuInflater to
+        // programmatically setup your menu layout for the Activity.
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) : Boolean {
+        if (item.itemId == R.id.action_settings) {
+            showInfo()
+        }
+
+        return true
+    }
+
+    // A function equivalent to "Alert"
+    private fun showInfo() {
+        val dialogTitle = getString(R.string.about_title, BuildConfig.VERSION_NAME)
+        val dialogMessage = getString(R.string.about_message)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(dialogTitle)
+        builder.setMessage(dialogMessage)
+        builder.create().show()
     }
 
     private fun incrementScore() {
