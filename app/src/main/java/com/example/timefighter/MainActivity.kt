@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -72,7 +73,14 @@ class MainActivity : AppCompatActivity() {
         tapMeButton = findViewById<Button>(R.id.tap_me_button)
 
         // Listener
-        tapMeButton.setOnClickListener { _ -> incrementScore() }
+        tapMeButton.setOnClickListener { v ->
+
+            val bounceAnimation = AnimationUtils.loadAnimation(this,
+                R.anim.bounce);
+
+            v.startAnimation(bounceAnimation)
+
+            incrementScore() }
 
         // Check if I have values in my bundle which I can use to restore my state values
         // when the orientation changes.
